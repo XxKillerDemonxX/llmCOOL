@@ -1,0 +1,3 @@
+https://www.packtpub.com/en-us/learning/how-to-tutorials/transformer-building-blocks?srsltid=AfmBOooTmHy-VgVUtjdJc6OeFNlh4MM7CsYXqsyFjuZ5twEibuHiyUWx
+https://www.datacamp.com/tutorial/building-a-transformer-with-py-torch
+https://medium.com/@varunsivamani/encoder-block-in-transformer-c9c8b5b9d589
