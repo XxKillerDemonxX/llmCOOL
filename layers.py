@@ -59,7 +59,6 @@ class MultiHeadAttention(nn.Module):
     def param(self):
         return list(self.parameters())
 
-
 #-----LAYER NORM-----
 class LayerNorm(nn.Module):
     def __init__(self, embed_dim):
