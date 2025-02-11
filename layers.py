@@ -23,7 +23,12 @@ class MultiHeadAttention(nn.Module):
     # matrix shape of x should follow (batch_size, context_length, embed_dim)
     def forward(self, x):
         batch_size, context_length, emb = x.shape
+
+        # QKV (batch_size, context_length, embed_dim*3)
         QKV = self.weightQKV(x)
+        # q (batch_size, context_length, embed_dim)
+        # k (batch_size, context_length, embed_dim)
+        # v (batch_size, context_length, embed_dim)
         q, k, v = QKV.split(self.embed_dim, dim = 2)
 
         # view as (batch_size, num_heads, context_length, head_dim)
@@ -45,9 +50,9 @@ class MultiHeadAttention(nn.Module):
         attn_weights = F.softmax(attn_score, dim = -1)
 
         attn_output = torch.matmul(attn_weights, v)
-        # permute to (batch_size, context_length, num_heads, head_dim)
+        # permute to (batch_size, context_length, num_heads, head_dim) (num_heads * head_dim = embed_dim)
         attn_output = attn_output.permute(0, 2, 1, 3)
-        # view to (batch_size, context_length, emb_size)
+        # view to (batch_size, context_length, embed_dim)
         attn_output = attn_output.contiguous.view(batch_size, context_length, -1)
 
         return self.weightOut(attn_output)
