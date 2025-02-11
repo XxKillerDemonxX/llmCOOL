@@ -88,3 +88,14 @@ class FeedForward(nn.Module):
         return self.layers(x)
     def param(self):
         return list(self.parameters())
+    
+#-----EMBEDDING LAYER-----
+class EmbeddingLayer(nn.Module):
+    def __init__(self, vocab_size, embed_dim):
+        super(EmbeddingLayer, self).__init__()
+        #creates embedding with xavier intializtion so weights are drawn from uniform distribution, helps converge faster
+        self.embedding = nn.init.xavier_uniform_(torch.empty(vocab_size, embed_dim))
+    #take input of shape (batch_size, context_length)
+    def forward(self, x):
+        #return output of shape (batch_size, context_length, embed_dim)
+        return self.embedding[x]
