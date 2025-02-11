@@ -99,3 +99,5 @@ class EmbeddingLayer(nn.Module):
     def forward(self, x):
         #return output of shape (batch_size, context_length, embed_dim)
         return self.embedding[x]
+    def param(self):
+        return list(self.parameters())
