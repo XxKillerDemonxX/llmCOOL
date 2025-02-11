@@ -8,9 +8,9 @@ embed_dim = 64
 num_head = 8
 
 
-class block(nn.Module):
+class TransformerBlock(nn.Module):
     def __init__(self):
-        super(block, self).__init__()
+        super(TransformerBlock, self).__init__()
         self.mha = MultiHeadAttention(embed_dim, num_head)
         self.ff = FeedForward(embed_dim)
         self.ln1 = LayerNorm(embed_dim)
