@@ -1,13 +1,14 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from transformers import GPT2Tokenizer
 from layers import MultiHeadAttention, LayerNorm, FeedForward, EmbeddingLayer
 
-
-embed_dim = 64
-num_head = 8
-vocab_length = 100
-context_length = 100
+tokenizer = GPT2Tokenizer.from_pretrained("gpt2")
+embed_dim = 768
+num_head = 12
+vocab_length = tokenizer.vocab_size
+context_length = 1024
 
 class TransformerBlock(nn.Module):
     def __init__(self):
