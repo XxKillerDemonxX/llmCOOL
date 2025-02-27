@@ -26,15 +26,20 @@ class Transformer(nn.Module):
     def __init__(self):
         super(Transformer, self).__init__()
         # embedding: has an embedding for each token
-        embedding = EmbeddingLayer(vocab_length, embed_dim)
+        self.embedding = EmbeddingLayer(vocab_length, embed_dim)
         # positional embedding: has an embedding for token position
-        positionEmbedding = EmbeddingLayer(context_length, embed_dim)
+        self.positionEmbedding = EmbeddingLayer(context_length, embed_dim)
         # transformer blocks
         self.blocks = nn.ModuleList([TransformerBlock() for _ in range(3)])
         # final linear layer to output of shape (batch_size, context_length, vocab_length)
         # when generating output, we would take the last index in context_length and use it's vocab_length to predict the next token
-        outputLinear = nn.Linear(embed_dim, vocab_length)
+        self.outputLinear = nn.Linear(embed_dim, vocab_length)
     def forward(self, x):
+        # get embedding data of x tokens
+        x_emb = self.embedding.forward(x)
+        # get positional embedding data of x tokens
+        x_pos = self.positionEmbedding.forward(x)
+
         return
 
 
