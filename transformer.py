@@ -39,7 +39,14 @@ class Transformer(nn.Module):
         x_emb = self.embedding.forward(x)
         # get positional embedding data of x tokens
         x_pos = self.positionEmbedding.forward(x)
+        # add positional embedding to embedding
+        x_out = x_emb + x_pos
+        #
+        for block in self.blocks:
+            x_out = block.forward(x_out)
 
-        return
+        self.out = self.outLinear(x_out)
+
+        return self.out
 
 
