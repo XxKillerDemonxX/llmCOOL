@@ -41,4 +41,6 @@ for epoch in range(epochs):
     print(f"epoch({epoch + 1}/{epochs})")
     # data["input_ids"] will be the input into the transformer
     for i, data in enumerate(dataloader, 0):
-        print(data["input_ids"].shape)
+        out = transformer.forward(data["input_id"])
+        # state: (batch_size, context_length. vocab_size)
+        # need to compare it to (batch_size, context_length) where each element in context_length holds the ground truth
