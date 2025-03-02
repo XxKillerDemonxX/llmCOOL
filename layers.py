@@ -21,6 +21,7 @@ class MultiHeadAttention(nn.Module):
         self.weightQKV = nn.Linear(embed_dim, embed_dim*3)
         self.weightOut = nn.Linear(embed_dim, embed_dim)
     # matrix shape of x should follow (batch_size, context_length, embed_dim)
+    # maybe add another parameter for data["attention_mask"]?
     def forward(self, x):
         batch_size, context_length, emb = x.shape
 
@@ -32,9 +33,9 @@ class MultiHeadAttention(nn.Module):
         q, k, v = QKV.split(self.embed_dim, dim = 2)
 
         # view as (batch_size, num_heads, context_length, head_dim)
-        q = q.view(batch_size, self.num_heads, context_length, self.head_dim)
-        k = k.view(batch_size, self.num_heads, context_length, self.head_dim)
-        v = v.view(batch_size, self.num_heads, context_length, self.head_dim)
+        q = q.reshape(batch_size, self.num_heads, context_length, self.head_dim)
+        k = k.reshape(batch_size, self.num_heads, context_length, self.head_dim)
+        v = v.reshape(batch_size, self.num_heads, context_length, self.head_dim)
 
         # -> (batch_size, num_heads, context_length, context_length)
         attn_score = torch.matmul(q, k.permute(0, 1, 3, 2))
@@ -81,7 +82,7 @@ class FeedForward(nn.Module):
         super(FeedForward, self).__init__()
         self.layers = nn.Sequential(
             nn.Linear(embed_dim, 4 * embed_dim),
-            nn.reLU(),
+            nn.ReLU(),
             nn.Linear(4 * embed_dim, embed_dim),
         )
     def forward(self, x):

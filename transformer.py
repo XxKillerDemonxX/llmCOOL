@@ -42,14 +42,15 @@ class Transformer(nn.Module):
         # get embedding data of x tokens
         x_emb = self.embedding.forward(x)
         # get positional embedding data of x tokens
-        x_pos = self.positionEmbedding.forward(x)
+        # just take all positional embeddings from 0-context_length... so this needs change -> maybe just make a positional embedding layer or something i dunno
+        #x_pos = self.positionEmbedding.forward(x)
         # add positional embedding to embedding
-        x_out = x_emb + x_pos
+        x_out = x_emb #+ x_pos
         #
         for block in self.blocks:
             x_out = block.forward(x_out)
 
-        self.out = self.outLinear(x_out)
+        self.out = self.outputLinear(x_out)
 
         return self.out
 

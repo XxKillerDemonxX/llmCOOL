@@ -16,7 +16,7 @@ dataset = load_dataset("Skylion007/openwebtext", trust_remote_code=True)
 tokenizer = GPT2Tokenizer.from_pretrained("gpt2")
 tokenizer.pad_token = tokenizer.eos_token
 embed_dim = 256
-num_head = 12
+num_head = 8
 vocab_length = tokenizer.vocab_size
 context_length = 512
 epochs = 10
@@ -41,6 +41,7 @@ for epoch in range(epochs):
     print(f"epoch({epoch + 1}/{epochs})")
     # data["input_ids"] will be the input into the transformer
     for i, data in enumerate(dataloader, 0):
-        out = transformer.forward(data["input_id"])
+        out = transformer.forward(data["input_ids"])
+        print(out.shape)
         # state: (batch_size, context_length. vocab_size)
         # need to compare it to (batch_size, context_length) where each element in context_length holds the ground truth
