@@ -39,12 +39,13 @@ class MultiHeadAttention(nn.Module):
         # -> (batch_size, num_heads, context_length, context_length)
         attn_score = torch.matmul(q, k.permute(0, 1, 3, 2))
         # scaling
-        scaling_factor = q.size(self.head_dim) ** 0.5
+        scaling_factor = self.head_dim ** 0.5
         attn_score = attn_score/scaling_factor
 
         # masking
         tril = torch.tril((torch.ones(context_length, context_length)))
-        attn_score = attn_score.masked_fill(tril==0, float('-inf'))
+        # unsqueeze so (1, 1, context_length, context_length) to broadcast properly
+        attn_score = attn_score.masked_fill(tril.unsqueeze(0).unsqueeze(0) ==0, float('-inf'))
 
         # softmax
         attn_weights = F.softmax(attn_score, dim = -1)
@@ -53,7 +54,7 @@ class MultiHeadAttention(nn.Module):
         # permute to (batch_size, context_length, num_heads, head_dim) (num_heads * head_dim = embed_dim)
         attn_output = attn_output.permute(0, 2, 1, 3)
         # view to (batch_size, context_length, embed_dim)
-        attn_output = attn_output.contiguous.view(batch_size, context_length, -1)
+        attn_output = attn_output.contiguous().view(batch_size, context_length, -1)
 
         return self.weightOut(attn_output)
     def param(self):
