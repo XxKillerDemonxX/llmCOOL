@@ -6,12 +6,14 @@ from transformer import Transformer
 from torch.utils.data import DataLoader
 from datasets import load_dataset, load_from_disk
 
-
+ngpu = 1
 # dataset
 # https://huggingface.co/datasets/Skylion007/openwebtext/tree/main
-dataset = load_dataset("Skylion007/openwebtext", trust_remote_code=True)
+#dataset = load_dataset("Skylion007/openwebtext", trust_remote_code=True)
 #shuffled_dataset = dataset['train'].shuffle(seed=321)
-
+device = torch.device("cuda:0" if (torch.cuda.is_available() and ngpu > 0) else "cpu")
+print(torch.cuda.is_available())
+print(device)
 # setup information
 tokenizer = GPT2Tokenizer.from_pretrained("gpt2")
 tokenizer.pad_token = tokenizer.eos_token
@@ -32,16 +34,23 @@ dataset = load_from_disk("C:/Users/adamt/OneDrive/Documents/llmCOOL/train_512")
 dataset.set_format(type="torch", columns=["input_ids", "attention_mask"])
 
 collator = DataCollatorWithPadding(tokenizer=tokenizer)
-dataloader = DataLoader(dataset, batch_size=64, collate_fn=collator)
-
-transformer = Transformer(embed_dim, num_head, vocab_length, context_length)
+dataloader = DataLoader(dataset, batch_size=1, collate_fn=collator)
 
 
+transformer = Transformer(embed_dim, num_head, vocab_length, context_length, device).to(device)
+
+num_params = sum(p.numel() for p in transformer.parameters())
+print(f"Total parameters: {num_params}")
 for epoch in range(epochs):
     print(f"epoch({epoch + 1}/{epochs})")
     # data["input_ids"] will be the input into the transformer
     for i, data in enumerate(dataloader, 0):
+        #forward pass
         out = transformer.forward(data["input_ids"])
-        print(out.shape)
-        # state: (batch_size, context_length. vocab_size)
+        ground_truth = torch.roll(data["input_ids"], -1, 1).to(device)
+        ground_truth[:, -1].fill_(tokenizer.eos_token_id)
+        out = out.permute(0, 2, 1)
+        loss = F.cross_entropy(out, ground_truth)
+        print(loss)
+        # state: (batch_size, context_length, vocab_size)
         # need to compare it to (batch_size, context_length) where each element in context_length holds the ground truth
