@@ -92,7 +92,7 @@ class EmbeddingLayer(nn.Module):
     def __init__(self, vocab_size, embed_dim, device):
         super(EmbeddingLayer, self).__init__()
         #creates embedding with xavier intializtion so weights are drawn from uniform distribution, helps converge faster
-        self.embedding = nn.init.xavier_uniform_(torch.empty(vocab_size, embed_dim)).to(device)
+        self.embedding = nn.Parameter(nn.init.xavier_uniform_(torch.empty(vocab_size, embed_dim)).to(device))
     #take input of shape (batch_size, context_length)
     def forward(self, x):
         #return output of shape (batch_size, context_length, embed_dim)
